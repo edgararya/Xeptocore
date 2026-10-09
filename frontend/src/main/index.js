@@ -5,6 +5,7 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
 const { initBackendBridge } = require('./pythonBridge');
+const { registerIpcHandlers } = require('./ipcHandlers');
 
 const DEV_SERVER_URL = process.env.ELECTRON_START_URL;
 
@@ -36,6 +37,9 @@ function createWindow() {
 
 // Start the packaged Python backend and stop it on quit.
 initBackendBridge();
+
+// Register the IPC handlers that the preload API (window.api) talks to.
+registerIpcHandlers();
 
 app.whenReady().then(() => {
   createWindow();

@@ -1,0 +1,11 @@
+#blokir file tertentu
+.env
+.env.*
+
+# Blokir folder tertentu secara total
+.claude/
+.postman/
+postman/
+testing/
+.claude/
+backend/wights/

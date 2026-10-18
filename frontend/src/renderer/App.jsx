@@ -3,6 +3,8 @@
 
 import { useState } from 'react';
 
+import UploadArea from './components/UploadArea';
+
 const TABS = [
   { id: 'upload', label: 'Upload File' },
   { id: 'history', label: 'History' },
@@ -37,7 +39,7 @@ function App() {
           aria-labelledby="tab-upload"
           hidden={activeTab !== 'upload'}
         >
-          Upload File view (future issue)
+          <UploadArea />
         </section>
 
         <section

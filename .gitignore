@@ -4,3 +4,5 @@ __pycache__/
 *.h5
 data/
 testing/
+node_modules/
+dist/

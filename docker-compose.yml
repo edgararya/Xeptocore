@@ -1,16 +1,16 @@
-﻿version: '3.8'
+﻿version: "3.8"
 
 services:
-  deepguard-backend:
+  xeptopcore-backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: deepguard-backend
+    container_name: xeptopcore-backend
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app/app
-      - ./weights:/app/weights
+      - ./backend/app:/app/app
+      - ./backend/weights:/app/weights
     environment:
       - PYTHONUNBUFFERED=1
       - TF_CPP_MIN_LOG_LEVEL=3

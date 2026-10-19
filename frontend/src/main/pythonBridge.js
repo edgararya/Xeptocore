@@ -68,6 +68,20 @@ function startBackend(onStartupFailure) {
     startupFailureHandler = onStartupFailure;
   }
 
+  // Dev override: XEPTOCORE_BACKEND_PORT points the app at a backend you started
+  // yourself (e.g. with uvicorn), so no packaged executable is spawned or stopped.
+  const rawExternalPort = process.env.XEPTOCORE_BACKEND_PORT;
+  if (rawExternalPort) {
+    const externalPort = Number.parseInt(rawExternalPort, 10);
+    if (!Number.isInteger(externalPort) || externalPort < 1 || externalPort > 65535) {
+      reportStartupFailure(`XEPTOCORE_BACKEND_PORT is not a valid port: ${rawExternalPort}`);
+      return;
+    }
+    backendPort = externalPort;
+    console.log(`[pythonBridge] Using external backend on port ${backendPort}`);
+    return;
+  }
+
   const executable = backendExecutablePath();
   if (!fs.existsSync(executable)) {
     reportStartupFailure(`Backend executable not found: ${executable}`);

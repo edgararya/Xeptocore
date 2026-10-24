@@ -6,7 +6,6 @@ const path = require('path');
 
 const { initBackendBridge } = require('./pythonBridge');
 const { registerIpcHandlers } = require('./ipcHandlers');
-const { initLiveScan, handleMainWindowClosed } = require('./liveScan');
 
 const DEV_SERVER_URL = process.env.ELECTRON_START_URL;
 
@@ -33,21 +32,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
-    handleMainWindowClosed();
   });
-}
-
-// Used by the tray: show the main window, or re-create it if it was closed.
-function showMainWindow() {
-  if (!mainWindow || mainWindow.isDestroyed()) {
-    createWindow();
-    return;
-  }
-  if (mainWindow.isMinimized()) {
-    mainWindow.restore();
-  }
-  mainWindow.show();
-  mainWindow.focus();
 }
 
 // Start the packaged Python backend and stop it on quit.
@@ -58,9 +43,6 @@ registerIpcHandlers();
 
 app.whenReady().then(() => {
   createWindow();
-
-  // Floating live-scan widget + system tray.
-  initLiveScan({ showMainWindow });
 
   app.on('activate', () => {
     // macOS: re-create a window when the dock icon is clicked and none are open.

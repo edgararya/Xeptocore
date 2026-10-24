@@ -14,15 +14,4 @@ contextBridge.exposeInMainWorld('api', {
   // Electron 32+ removed the non-standard File.path. webUtils is only
   // reachable from the preload script, so the renderer asks for the path here.
   getPathForFile: (file) => webUtils.getPathForFile(file),
-
-  // Live scan. captureScreen returns a raw base64 JPEG of the primary display.
-  // The widget reports its status to the main process (tray label, widget
-  // visibility) and receives start/stop commands from it (tray menu).
-  captureScreen: () => ipcRenderer.invoke('capture:screen'),
-  reportLiveScanStatus: (status) => ipcRenderer.send('livescan:status', status),
-  onLiveScanCommand: (callback) => {
-    const listener = (_event, command) => callback(command);
-    ipcRenderer.on('livescan:command', listener);
-    return () => ipcRenderer.removeListener('livescan:command', listener);
-  },
 });

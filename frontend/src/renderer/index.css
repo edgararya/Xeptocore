@@ -102,48 +102,4 @@
   .history-item__time {
     @apply ml-auto text-caption text-gray-500 dark:text-gray-400;
   }
-
-  /* Live scan widget window (always-on-top, ~280x88). The whole bar drags the window. */
-  .live-widget {
-    @apply flex h-screen items-center gap-3 border border-border bg-surface px-3 dark:border-border-dark dark:bg-surface-dark;
-    -webkit-app-region: drag;
-  }
-
-  .live-widget__dot {
-    @apply h-3 w-3 shrink-0 rounded-full bg-gray-400;
-  }
-
-  .live-widget--connecting .live-widget__dot,
-  .live-widget--scanning .live-widget__dot {
-    @apply animate-pulse bg-brand dark:bg-brand-dark;
-  }
-
-  .live-widget--alert .live-widget__dot {
-    @apply animate-pulse bg-danger dark:bg-danger-dark;
-  }
-
-  .live-widget--error .live-widget__dot {
-    @apply bg-warning dark:bg-warning-dark;
-  }
-
-  .live-widget__text {
-    @apply flex min-w-0 flex-1 flex-col;
-  }
-
-  .live-widget__title {
-    @apply truncate font-medium;
-  }
-
-  .live-widget--alert .live-widget__title {
-    @apply text-danger dark:text-danger-dark;
-  }
-
-  .live-widget__detail {
-    @apply truncate text-caption text-gray-500 dark:text-gray-400;
-  }
-
-  .live-widget__stop {
-    @apply rounded-lg border border-border px-3 py-1 dark:border-border-dark;
-    -webkit-app-region: no-drag;
-  }
 }

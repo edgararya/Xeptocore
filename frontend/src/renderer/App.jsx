@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 
+import HistoryList from './components/HistoryList';
 import UploadArea from './components/UploadArea';
 
 const TABS = [
@@ -48,7 +49,7 @@ function App() {
           aria-labelledby="tab-history"
           hidden={activeTab !== 'history'}
         >
-          History view (future issue)
+          <HistoryList isActive={activeTab === 'history'} />
         </section>
       </main>
     </div>

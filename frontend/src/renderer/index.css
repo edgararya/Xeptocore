@@ -55,4 +55,51 @@
   .upload-area__result {
     @apply mt-3 font-medium;
   }
+
+  .history-list__toolbar {
+    @apply mb-3 flex justify-end;
+  }
+
+  .history-list__refresh,
+  .history-item__delete {
+    @apply rounded-lg border border-border px-3 py-1 dark:border-border-dark;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .history-list__error {
+    @apply mb-3 text-danger dark:text-danger-dark;
+  }
+
+  .history-list__empty,
+  .history-list__note {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  .history-list__items {
+    @apply flex flex-col gap-2;
+  }
+
+  .history-item {
+    @apply flex items-center gap-3 rounded-lg border border-border px-3 py-2 dark:border-border-dark;
+  }
+
+  .history-item__status {
+    @apply min-w-20 font-medium;
+  }
+
+  .history-item--real .history-item__status {
+    @apply text-safe dark:text-safe-dark;
+  }
+
+  .history-item--fake .history-item__status {
+    @apply text-danger dark:text-danger-dark;
+  }
+
+  .history-item__source {
+    @apply rounded-full bg-gray-200 px-2 py-0.5 text-caption dark:bg-gray-700;
+  }
+
+  .history-item__time {
+    @apply ml-auto text-caption text-gray-500 dark:text-gray-400;
+  }
 }

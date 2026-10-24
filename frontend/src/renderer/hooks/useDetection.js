@@ -8,13 +8,7 @@
 
 import { useState, useCallback } from 'react';
 
-// ipcRenderer.invoke rejects with "Error invoking remote method '<channel>':
-// Error: <message>". Strip that wrapper so the UI shows only the message
-// (which may still start with a backend "ERROR_CODE: " prefix).
-function readableMessage(err) {
-  const raw = err instanceof Error ? err.message : String(err);
-  return raw.replace(/^Error invoking remote method '[^']*': (?:Error: )?/, '');
-}
+import { readableMessage } from '../utils/readableMessage';
 
 export function useDetection() {
   const [isDetecting, setIsDetecting] = useState(false);

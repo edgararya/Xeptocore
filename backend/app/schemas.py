@@ -38,6 +38,9 @@ class HistoryEntry(BaseModel):
     label: str
     confidence: float
     timestamp: int
+    # Only set on live-scan session entries (one entry per scan session).
+    frames_scanned: Optional[int] = None
+    alert_count: Optional[int] = None
 
 
 class HistoryResponse(BaseModel):

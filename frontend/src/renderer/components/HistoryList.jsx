@@ -63,7 +63,10 @@ function HistoryList({ isActive = true }) {
           const known = VERDICTS[entry.label];
           const verdict = known || { text: 'Unknown', icon: '?' };
           const variant = known ? entry.label : 'unknown';
-          const probability = known ? labelProbability(entry.label, entry.confidence) : null;
+          // Live-scan sessions are one summary row: how many frames were flagged
+          // and the highest fake score seen, instead of a single verdict percentage.
+          const isSession = typeof entry.frames_scanned === 'number';
+          const probability = known && !isSession ? labelProbability(entry.label, entry.confidence) : null;
           const date = new Date(entry.timestamp);
           const hasDate = !Number.isNaN(date.getTime());
 
@@ -72,6 +75,13 @@ function HistoryList({ isActive = true }) {
               <span className="history-item__status">
                 <span aria-hidden="true">{verdict.icon}</span> {verdict.text}
               </span>
+
+              {isSession && (
+                <span className="history-item__summary">
+                  {entry.alert_count || 0}/{entry.frames_scanned} frames flagged · peak fake{' '}
+                  {Math.round(entry.confidence * 100)}%
+                </span>
+              )}
 
               {probability !== null && (
                 <span className="history-item__confidence">

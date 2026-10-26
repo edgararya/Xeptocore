@@ -19,6 +19,7 @@ from .detector import run_inference, get_model_status, FAKE_THRESHOLD
 from .face_utils import detect_and_crop_face
 from .scoring import compute_ela_score, compute_blur_score
 from .history import history_store
+from .live_session import LiveSession
 from .schemas import HealthResponse, DetectResponse, HistoryResponse
 
 APP_VERSION = "0.1.0"
@@ -292,6 +293,7 @@ def _detect_video(contents: bytes, ext: str, start_time: float):
 async def live_scan(websocket: WebSocket, source: str = LIVE_SOURCE_DEFAULT):
     await websocket.accept()
     session_id = uuid.uuid4().hex[:6]
+    session = LiveSession(history_store, source)
     await websocket.send_json({
         "type": "connected",
         "session_id": session_id,
@@ -303,7 +305,7 @@ async def live_scan(websocket: WebSocket, source: str = LIVE_SOURCE_DEFAULT):
             data = await websocket.receive_json()
             if data.get("type") != "frame":
                 continue
-            for message in _process_live_frame(data, source):
+            for message in _process_live_frame(data, session):
                 await websocket.send_json(message)
     except WebSocketDisconnect:
         pass
@@ -313,9 +315,12 @@ async def live_scan(websocket: WebSocket, source: str = LIVE_SOURCE_DEFAULT):
             await websocket.close(code=1011)
         except Exception:
             pass
+    finally:
+        # Write the session's final summary to history, however the scan ended.
+        session.finish()
 
 
-def _process_live_frame(data: dict, source: str) -> list:
+def _process_live_frame(data: dict, session: LiveSession) -> list:
     sequence = data.get("sequence")
     timestamp = data.get("timestamp") or _now_ms()
 
@@ -367,9 +372,12 @@ def _process_live_frame(data: dict, source: str) -> list:
         "timestamp": timestamp,
     }
 
+    # One history entry per live-scan session: every analysed frame is counted
+    # into it, and the entry is pushed to the UI only when this frame alerted.
+    entry = session.record(inf["confidence"], alert, timestamp)
+
     messages = [result]
-    if alert:
-        entry = history_store.add(source, inf["label"], inf["confidence"], timestamp)
+    if alert and entry is not None:
         messages.append({"type": "history_update", "entry": entry})
     return messages
 

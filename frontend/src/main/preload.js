@@ -19,6 +19,15 @@ contextBridge.exposeInMainWorld('api', {
   // The widget reports its status to the main process (tray label, widget
   // visibility) and receives start/stop commands from it (tray menu).
   captureScreen: () => ipcRenderer.invoke('capture:screen'),
+
+  // Main window: start/stop the scan and follow its status.
+  toggleLiveScan: () => ipcRenderer.send('livescan:toggle'),
+  getLiveScanState: () => ipcRenderer.invoke('livescan:get-state'),
+  onLiveScanState: (callback) => {
+    const listener = (_event, state) => callback(state);
+    ipcRenderer.on('livescan:state', listener);
+    return () => ipcRenderer.removeListener('livescan:state', listener);
+  },
   reportLiveScanStatus: (status) => ipcRenderer.send('livescan:status', status),
   onLiveScanCommand: (callback) => {
     const listener = (_event, command) => callback(command);

@@ -42,7 +42,7 @@ class HistoryStore:
         except OSError:
             pass
 
-    def add(self, source: str, label: str, confidence: float, timestamp: int = None) -> dict:
+    def add(self, source: str, label: str, confidence: float, timestamp: int = None, **extra) -> dict:
         with self._lock:
             self._counter += 1
             entry = {
@@ -52,9 +52,21 @@ class HistoryStore:
                 "confidence": round(float(confidence), 4),
                 "timestamp": int(timestamp) if timestamp is not None else int(time.time() * 1000),
             }
+            entry.update(extra)
             self._entries.append(entry)
             self._save()
             return entry
+
+    def update(self, entry_id: str, **fields) -> dict:
+        """Merge `fields` into an existing entry. Returns a copy of the updated
+        entry, or None if no entry has that id (e.g. the user deleted it)."""
+        with self._lock:
+            for e in self._entries:
+                if e.get("id") == entry_id:
+                    e.update(fields)
+                    self._save()
+                    return dict(e)
+            return None
 
     def list(self) -> list:
         with self._lock:

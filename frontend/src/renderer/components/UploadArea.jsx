@@ -9,7 +9,7 @@
 import { useState, useRef, useEffect } from 'react';
 
 import { useDetection } from '../hooks/useDetection';
-import { labelProbability } from '../utils/verdictConfidence';
+import ResultPanel from './ResultPanel';
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'video/mp4'];
 
@@ -24,7 +24,6 @@ function UploadArea() {
   const inputRef = useRef(null);
 
   const { detect, isDetecting, result, error } = useDetection();
-  const probability = result ? labelProbability(result.label, result.confidence) : null;
 
   useEffect(() => {
     if (!file) {
@@ -128,12 +127,7 @@ function UploadArea() {
         </p>
       )}
 
-      {result && !error && (
-        <p className="upload-area__result">
-          Result: {result.label}
-          {probability !== null && ` (${Math.round(probability * 100)}%)`}
-        </p>
-      )}
+      {result && !error && <ResultPanel result={result} />}
     </div>
   );
 }

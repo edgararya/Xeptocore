@@ -36,6 +36,7 @@ let widgetWindow = null;
 let tray = null;
 let showMainWindow = () => {};
 let scanning = false;
+let currentStatus = 'idle';
 let isQuitting = false;
 
 // Captures the primary display and returns a raw base64 JPEG (no "data:" prefix,
@@ -193,6 +194,17 @@ function createTray() {
   }
 }
 
+// Tells every window the current live scan status; the main window's toggle
+// button follows it so its label stays right even when the scan is started or
+// stopped from the tray or the widget.
+function broadcastState() {
+  BrowserWindow.getAllWindows().forEach((win) => {
+    if (!win.isDestroyed()) {
+      win.webContents.send('livescan:state', currentStatus);
+    }
+  });
+}
+
 // Call once, after the app is ready. `options.showMainWindow` shows or re-creates
 // the main window (used by the tray).
 function initLiveScan(options = {}) {
@@ -206,12 +218,24 @@ function initLiveScan(options = {}) {
 
   ipcMain.handle('capture:screen', () => captureScreen());
 
+  // Main window toggle button: ask for the state, follow it, and flip it.
+  ipcMain.handle('livescan:get-state', () => currentStatus);
+  ipcMain.on('livescan:toggle', () => {
+    if (scanning) {
+      stopScan();
+    } else {
+      startScan();
+    }
+  });
+
   ipcMain.on('livescan:status', (_event, status) => {
     if (typeof status !== 'string') {
       return;
     }
 
     scanning = ACTIVE_STATUSES.has(status);
+    currentStatus = status;
+    broadcastState();
     updateTray();
 
     if (status === 'idle' && widgetWindow && !widgetWindow.isDestroyed() && widgetWindow.isVisible()) {

@@ -4,6 +4,7 @@
 import { useState } from 'react';
 
 import HistoryList from './components/HistoryList';
+import LiveScanToggle from './components/LiveScanToggle';
 import UploadArea from './components/UploadArea';
 
 const TABS = [
@@ -16,6 +17,8 @@ function App() {
 
   return (
     <div className="app">
+      <LiveScanToggle />
+
       <nav role="tablist" aria-label="Detection mode">
         {TABS.map((tab) => (
           <button

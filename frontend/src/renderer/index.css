@@ -19,6 +19,26 @@
     @apply mx-auto max-w-3xl p-4;
   }
 
+  .live-toggle {
+    @apply mb-3 flex items-center justify-end gap-3;
+  }
+
+  .live-toggle__status {
+    @apply text-caption text-gray-500 dark:text-gray-400;
+  }
+
+  .live-toggle__status--alert {
+    @apply text-danger dark:text-danger-dark;
+  }
+
+  .live-toggle__status--error {
+    @apply text-warning dark:text-warning-dark;
+  }
+
+  .live-toggle__button {
+    @apply rounded-lg bg-brand px-3 py-1.5 font-medium text-white dark:bg-brand-dark dark:text-gray-900;
+  }
+
   .tab {
     @apply rounded-t-lg border border-b-0 border-border px-4 py-2 dark:border-border-dark;
   }
@@ -54,6 +74,70 @@
 
   .upload-area__result {
     @apply mt-3 font-medium;
+  }
+
+  .result-panel {
+    @apply mt-4 rounded-lg border-2 border-border p-4 dark:border-border-dark;
+  }
+
+  .result-panel--real {
+    @apply border-safe dark:border-safe-dark;
+  }
+
+  .result-panel--fake {
+    @apply border-danger dark:border-danger-dark;
+  }
+
+  .result-panel--unknown {
+    @apply border-warning dark:border-warning-dark;
+  }
+
+  .result-panel__header {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .result-panel__verdict {
+    @apply text-heading;
+  }
+
+  .result-panel__verdict--real {
+    @apply text-safe dark:text-safe-dark;
+  }
+
+  .result-panel__verdict--fake {
+    @apply text-danger dark:text-danger-dark;
+  }
+
+  .result-panel__verdict--unknown {
+    @apply text-warning dark:text-warning-dark;
+  }
+
+  .result-panel__confidence {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  .result-panel__details {
+    @apply mt-3;
+  }
+
+  .result-panel__details summary {
+    @apply cursor-pointer text-caption text-gray-500 dark:text-gray-400;
+  }
+
+  .result-panel__scores {
+    @apply mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1;
+  }
+
+  .result-panel__scores dt {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  .result-panel__scores dd {
+    @apply font-medium;
+  }
+
+  .result-panel__note {
+    @apply mt-2 text-caption text-gray-500 dark:text-gray-400;
   }
 
   .history-list__toolbar {
@@ -93,6 +177,10 @@
 
   .history-item--fake .history-item__status {
     @apply text-danger dark:text-danger-dark;
+  }
+
+  .history-item__summary {
+    @apply text-caption text-gray-500 dark:text-gray-400;
   }
 
   .history-item__source {

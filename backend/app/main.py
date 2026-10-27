@@ -331,6 +331,7 @@ def _process_live_frame(data: dict, session: LiveSession) -> list:
         "label": "real",
         "confidence": 0.0,
         "alert": False,
+        "face_detected": False,
         "per_model_scores": empty_scores,
         "timestamp": timestamp,
     }
@@ -368,6 +369,7 @@ def _process_live_frame(data: dict, session: LiveSession) -> list:
         "label": inf["label"],
         "confidence": inf["confidence"],
         "alert": alert,
+        "face_detected": True,
         "per_model_scores": inf["per_model_scores"],
         "timestamp": timestamp,
     }
@@ -385,6 +387,11 @@ def _process_live_frame(data: dict, session: LiveSession) -> list:
 @app.get("/history", response_model=HistoryResponse)
 async def get_history():
     return {"entries": history_store.list()}
+
+
+@app.delete("/history")
+async def clear_history():
+    return {"deleted": history_store.clear()}
 
 
 @app.delete("/history/{entry_id}")

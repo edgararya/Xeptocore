@@ -141,13 +141,21 @@
   }
 
   .history-list__toolbar {
-    @apply mb-3 flex justify-end;
+    @apply mb-3 flex items-center justify-end gap-2;
   }
 
   .history-list__refresh,
   .history-item__delete {
     @apply rounded-lg border border-border px-3 py-1 dark:border-border-dark;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .history-list__confirm {
+    @apply flex items-center gap-2;
+  }
+
+  .history-list__confirm-yes {
+    @apply rounded-lg bg-danger px-3 py-1 font-medium text-white dark:bg-danger-dark dark:text-gray-900;
   }
 
   .history-list__error {

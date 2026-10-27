@@ -45,5 +45,16 @@ export function useHistory() {
     }
   }, []);
 
-  return { entries, isLoading, error, reload, remove };
+  const clear = useCallback(async () => {
+    setError(null);
+
+    try {
+      await requireApi().clearHistory();
+      setEntries([]);
+    } catch (err) {
+      setError(readableMessage(err));
+    }
+  }, []);
+
+  return { entries, isLoading, error, reload, remove, clear };
 }

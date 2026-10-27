@@ -99,6 +99,15 @@ function registerIpcHandlers() {
       throw err instanceof Error ? err : new Error(String(err));
     }
   });
+
+  ipcMain.handle('history:clear', async () => {
+    try {
+      await backendFetch('/history', { method: 'DELETE' });
+      return true;
+    } catch (err) {
+      throw err instanceof Error ? err : new Error(String(err));
+    }
+  });
 }
 
 module.exports = {

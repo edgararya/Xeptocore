@@ -21,7 +21,8 @@ const FRAME_TIMEOUT_MS = 15000;
 
 // For frames it cannot analyse (no face found, decode failure) the backend
 // replies with a neutral "real / 0.0" result whose model scores are all null.
-// A genuine result always has at least one model score.
+// A genuine result always has at least one model score. Only used as a fallback
+// for backends that do not send an explicit `face_detected` flag.
 function hasModelScores(message) {
   const scores = message && message.per_model_scores;
   if (!scores) {
@@ -138,7 +139,10 @@ export function useLiveScan() {
           label: message.label,
           confidence: message.confidence,
           alert: Boolean(message.alert),
-          faceDetected: hasModelScores(message),
+          faceDetected:
+            typeof message.face_detected === 'boolean'
+              ? message.face_detected
+              : hasModelScores(message),
         };
         setLastResult(result);
 

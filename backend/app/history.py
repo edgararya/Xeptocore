@@ -68,6 +68,14 @@ class HistoryStore:
                     return dict(e)
             return None
 
+    def clear(self) -> int:
+        """Remove every entry. Returns how many were removed."""
+        with self._lock:
+            removed = len(self._entries)
+            self._entries = []
+            self._save()
+            return removed
+
     def list(self) -> list:
         with self._lock:
             return list(self._entries)

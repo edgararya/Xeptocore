@@ -11,7 +11,9 @@ services:
     volumes:
       - ./backend/app:/app/app
       - ./backend/weights:/app/weights
+      - ./backend/data:/data
     environment:
       - PYTHONUNBUFFERED=1
       - TF_CPP_MIN_LOG_LEVEL=3
+      - HISTORY_FILE=/data/history.json
     restart: unless-stopped

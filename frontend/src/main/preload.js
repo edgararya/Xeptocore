@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('api', {
   detectFile: (filePath) => ipcRenderer.invoke('detect:file', filePath),
   getHistory: () => ipcRenderer.invoke('history:list'),
   deleteHistoryEntry: (id) => ipcRenderer.invoke('history:delete', id),
+  clearHistory: () => ipcRenderer.invoke('history:clear'),
   getBackendPort: () => ipcRenderer.invoke('backend:port'),
 
   // Electron 32+ removed the non-standard File.path. webUtils is only

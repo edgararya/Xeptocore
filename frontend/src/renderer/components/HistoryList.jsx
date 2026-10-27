@@ -1,7 +1,7 @@
 // frontend/src/renderer/components/HistoryList.jsx
 // Lists past detection results (file uploads and live scans), newest first.
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useHistory } from '../hooks/useHistory';
 import { formatRelativeTime } from '../utils/formatRelativeTime';
@@ -22,7 +22,8 @@ const SOURCE_LABELS = {
 const MAX_VISIBLE = 100;
 
 function HistoryList({ isActive = true }) {
-  const { entries, isLoading, error, reload, remove } = useHistory();
+  const { entries, isLoading, error, reload, remove, clear } = useHistory();
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   // The panel stays mounted while its tab is hidden, so refetch every time the
   // tab becomes active; otherwise new results would not show up until restart.
@@ -31,6 +32,18 @@ function HistoryList({ isActive = true }) {
       reload();
     }
   }, [isActive, reload]);
+
+  // Drop a pending confirmation once there is nothing left to clear.
+  useEffect(() => {
+    if (entries.length === 0) {
+      setConfirmingClear(false);
+    }
+  }, [entries.length]);
+
+  async function handleClear() {
+    setConfirmingClear(false);
+    await clear();
+  }
 
   const sorted = [...entries].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   const visible = sorted.slice(0, MAX_VISIBLE);
@@ -46,6 +59,39 @@ function HistoryList({ isActive = true }) {
         >
           {isLoading ? 'Refreshing…' : 'Refresh'}
         </button>
+
+        {entries.length > 0 &&
+          (confirmingClear ? (
+            <span
+              className="history-list__confirm"
+              role="group"
+              aria-label="Confirm clearing history"
+            >
+              <span>Delete all {entries.length} entries?</span>
+              <button
+                type="button"
+                className="history-list__confirm-yes"
+                onClick={handleClear}
+              >
+                Yes, delete all
+              </button>
+              <button
+                type="button"
+                className="history-list__refresh"
+                onClick={() => setConfirmingClear(false)}
+              >
+                Cancel
+              </button>
+            </span>
+          ) : (
+            <button
+              type="button"
+              className="history-list__refresh"
+              onClick={() => setConfirmingClear(true)}
+            >
+              Clear all
+            </button>
+          ))}
       </div>
 
       {error && (

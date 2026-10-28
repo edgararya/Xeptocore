@@ -6,7 +6,7 @@ A desktop app that checks whether faces in images, videos, or **your live screen
 
 ![Upload and result](docs/images/upload.png)
 ![Live scan widget](docs/images/live-scan.png)
-![History](docs/images/history.png
+![History](docs/images/history.png)
 
 ## Features
 

@@ -4,9 +4,25 @@ A desktop app that checks whether faces in images, videos, or **your live screen
 
 > **Status:** work in progress. Upload, live scan, and history all work in a development setup. A one-click installer is not available yet (see the [roadmap](#roadmap)).
 
-![Upload and result](docs/images/upload.png)
-![Live scan widget](docs/images/live-scan.png)
-![History](docs/images/history.png)
+<table border="0">
+  <tr>
+    <td align="center" width="33%">
+      <img src="docs/images/upload.png" alt="Upload and result" width="100%"/>
+      <br/>
+      <sub><b>Upload & Result</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/images/live-scan.png" alt="Live scan widget" width="100%"/>
+      <br/>
+      <sub><b>Live Scan Widget</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/images/history.png" alt="History" width="100%"/>
+      <br/>
+      <sub><b>History</b></sub>
+    </td>
+  </tr>
+</table>
 
 ## Features
 

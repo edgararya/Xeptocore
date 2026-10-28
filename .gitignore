@@ -1,4 +1,4 @@
-weights/
+backend/weights/
 __pycache__/
 *.pyc
 *.h5
@@ -6,3 +6,4 @@ data/
 testing/
 node_modules/
 dist/
+.claude/

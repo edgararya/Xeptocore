@@ -2,6 +2,8 @@
 
 A desktop app that checks whether faces in images, videos, or **your live screen** look like deepfakes. Analysis runs on your own machine: nothing is uploaded to a cloud service.
 
+Documentation: [docs/](docs/)
+
 > **Status:** work in progress. Upload, live scan, and history all work in a development setup. A one-click installer is not available yet (see the [roadmap](#roadmap)).
 
 <table border="0">

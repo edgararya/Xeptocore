@@ -56,7 +56,7 @@ Xeptocore is built as a desktop app that runs locally on the user's machine, wit
 | 1 | Analyse an uploaded file and give a clear label (real or deepfake) with a confidence level | Met |
 | 2 | Watch the screen continuously and alert automatically when a deepfake is suspected, without the user triggering a manual check each time | Met (a single alert level) |
 | 3 | Store a history of detection results so users can review earlier ones | Met (a summary; no per-model detail) |
-| 4 | Keep the interface responsive while analysis runs | Partly: the interface does not freeze, but the backend processes one frame at a time and holds up other requests while it does |
+| 4 | Keep the interface responsive while analysis runs | Met: analysis runs in worker threads, one job at a time, so the interface and other requests stay responsive (a long video upload does delay live scan frames) |
 | 5 | Be extendable to a mobile platform without a major architecture overhaul | Not tested: input sources are already separated (`source`), but there is no mobile client |
 
 ## 6. Assumptions and constraints
@@ -81,7 +81,7 @@ Xeptocore is built as a desktop app that runs locally on the user's machine, wit
 | Risk | Mitigation | Status |
 |---|---|---|
 | False positives/negatives can mislead if the results are trusted blindly | Show the confidence, use neutral language, and state the limitations in the README | Applied |
-| A permissive face detector can give a verdict on objects that are not faces | Tighten or replace the face detector | Not yet |
+| A permissive face detector can give a verdict on objects that are not faces | Replaced the permissive Haar detector with YuNet; the Haar cascade is kept only as a stricter fallback | Applied (needs the YuNet model file in `backend/weights/`) |
 | A large installer because of TensorFlow | Consider migrating to TFLite or ONNX Runtime | Not yet |
 | Live scan is heavy on low-spec laptops | Make the scan interval adjustable (today it is fixed at 1 second by the backend) | Not yet |
 | Test data and screenshots contain other people's faces | The privacy rules in `CONTRIBUTING.md`: no images of people without permission in the repository, issues, or screenshots | Applied |

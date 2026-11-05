@@ -18,7 +18,7 @@ flowchart TB
 
     subgraph Backend["FastAPI backend"]
         API["REST + WebSocket"]
-        Face["Face detection<br/>Haar cascade + CLAHE"]
+        Face["Face detection<br/>YuNet (Haar fallback)"]
         Ens["4-model ensemble"]
         Scores["ELA + blur<br/>(uploads only)"]
         Session["LiveSession"]
@@ -75,7 +75,7 @@ History is stored in one JSON file (`history.json`; the location can be changed 
 
 ## 5. Detection engine
 
-1. **Face detection and crop** (`face_utils.py`): an OpenCV frontal Haar cascade on a CLAHE-enhanced image, taking the largest face and cropping it with a 35% margin. No face means no result.
+1. **Face detection and crop** (`face_utils.py`): YuNet (OpenCV's `FaceDetectorYN`, model file `backend/weights/face_detection_yunet_2023mar.onnx`) on a copy scaled to at most 960 px on the long side. Faces smaller than 24 px are ignored, the largest face is taken, and it is cropped as a square with a 35% margin. If the model file is missing or cannot be loaded, a stricter Haar cascade is used as a fallback and a warning is printed at startup. No face means no result.
 2. **Four models** (`detector.py`), each producing a probability:
 
    | Key | Model | Input | Weight |
@@ -116,7 +116,7 @@ flowchart LR
     Container --- Code
 ```
 
-Three folders are mounted into the container: the code (`backend/app`), the model weights (`backend/weights`, not in git), and the history data (`backend/data`). Because the code is mounted, a backend change only needs `docker compose restart`.
+Two folders are mounted into the container: the whole `backend` folder as `/app` (the code and `weights/`, which is not in git) and `backend/data` for the history file. Because the code is mounted, a backend change only needs `docker compose restart`. The API port is published on `127.0.0.1` only, so other machines on the network cannot reach it.
 
 ### Target (not implemented yet)
 
@@ -291,12 +291,14 @@ One flow serves both input sources; the difference is in how results are stored.
 | Confidence shown in the UI | The raw fake probability | The probability of the winning label ("Real, 96%") | A small number next to "Real" reads as low confidence |
 | Result for a frame with no face | Not designed | A neutral result with `face_detected: false` | So it does not look like a genuine "real" result |
 | Running the backend | A PyInstaller executable | Docker in development; PyInstaller is still planned | |
+| Face detection | Not specified; the first version was a permissive Haar cascade | YuNet, with a stricter Haar cascade as a fallback | The first detector accepted almost anything as a face and gave meaningless verdicts on non-face content |
+| Concurrency | Inference called directly inside `async` handlers | Analysis runs in worker threads, one job at a time (a lock) | The event loop stays free for history, health, and new requests; the lock protects the shared models and detector |
 
 ## 10. Technical debt and known limitations
 
-- **Inference blocks the event loop.** `run_inference` runs synchronously inside an `async` handler, so while one live scan frame is being processed, other requests (a history refresh, an upload) are held up too. The fix is to move inference to a thread pool.
-- **The face detector is very permissive.** The Haar cascade is called with `minNeighbors=1`, so objects that are not faces can be detected as faces and receive a meaningless verdict. The frontal cascade is also weak on tilted, side-on, or very small faces. Replacing the detector or tightening its parameters is the change with the biggest impact on result quality.
-- **No authentication and open CORS**, with port 8000 published in Docker. Fine for local development, not for a shared network.
+- **Analysis jobs run one at a time.** Inference and face detection run in worker threads, but a lock lets only one job run at once, because the models and the detector are shared. The server stays responsive, but a long video upload delays live scan frames until it finishes, and `processing_time_ms` includes the time spent waiting for the lock.
+- **The YuNet model file is not in the repository** (`weights/` is git-ignored). Without it the app falls back to a Haar cascade, which is stricter than the first version but still weaker, so results on small, tilted, or side-on faces are worse.
+- **No authentication and open CORS.** Docker publishes the port on `127.0.0.1` only, which is enough for local use; the packaged app must keep binding to localhost.
 - **The whole history file is rewritten on every save.** Live scan limits this by writing the session every 5 seconds; if the backend dies abruptly, up to 5 seconds of the latest session data can be lost.
 - **Live scan captures the primary display only**, scaled down to a width of 1280 px, so very small faces can be missed.
 - **There is no loading screen, `/health` check in the UI, or error view for models that failed to load**, as designed in [`FLOW_DIAGRAM.md`](FLOW_DIAGRAM.md).

@@ -45,7 +45,7 @@ This is a one-person project, so these are best-effort goals rather than guarant
 
 ## Known limitations of the development setup
 
-- The backend has **no authentication**, and the development Docker setup publishes port `8000`. Treat it as a local-only service: do not expose that port to untrusted networks. A packaged version of the app is planned; until then, this limitation applies.
+- The backend has no authentication, and the development Docker setup publishes port 8000 on 127.0.0.1 only, so other machines cannot reach it. Keep it that way, and do not expose that port to untrusted networks.
 
 ## How your data is handled
 

@@ -4,6 +4,7 @@ import io
 import os
 import time
 import tempfile
+import threading
 import uuid
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -11,6 +12,7 @@ from typing import Optional
 import cv2
 import numpy as np
 from fastapi import FastAPI, File, UploadFile, WebSocket, WebSocketDisconnect, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
@@ -38,6 +40,20 @@ ALLOWED_VIDEO_MIMES = {"video/mp4", "video/x-m4v"}
 GENERIC_MIMES = {"", "application/octet-stream", "binary/octet-stream"}
 
 IMAGE_SNIFF_FORMATS = {"JPEG", "MPO", "PNG"}
+
+# Face detection and model inference are blocking, so they run in worker threads
+# to keep the event loop free for other requests (history, health, new uploads).
+# The models and the face detector are shared objects, so only one analysis job
+# runs at a time; a second one waits its turn without blocking the server.
+_ANALYSIS_LOCK = threading.Lock()
+
+
+def _run_analysis(func, *args):
+    def locked():
+        with _ANALYSIS_LOCK:
+            return func(*args)
+
+    return run_in_threadpool(locked)
 
 
 @asynccontextmanager
@@ -173,9 +189,9 @@ async def detect(file: UploadFile = File(...)):
                     "Tidak ada model yang berhasil dimuat saat startup", status.HTTP_503_SERVICE_UNAVAILABLE)
 
     if media_type == "image":
-        result = _detect_image(contents, start_time)
+        result = await _run_analysis(_detect_image, contents, start_time)
     else:
-        result = _detect_video(contents, ext, start_time)
+        result = await _run_analysis(_detect_video, contents, ext, start_time)
 
     if isinstance(result, JSONResponse):
         return result
@@ -305,7 +321,8 @@ async def live_scan(websocket: WebSocket, source: str = LIVE_SOURCE_DEFAULT):
             data = await websocket.receive_json()
             if data.get("type") != "frame":
                 continue
-            for message in _process_live_frame(data, session):
+            messages = await _run_analysis(_process_live_frame, data, session)
+            for message in messages:
                 await websocket.send_json(message)
     except WebSocketDisconnect:
         pass

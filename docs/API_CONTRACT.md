@@ -16,7 +16,7 @@ The contract of the backend API (`backend/app/main.py`). This document follows t
 ## Address and configuration
 
 - **Address:** `http://localhost:{PORT}`. The backend uses the `PORT` environment variable (default `8000`) and prints `[Xeptocore] Backend ready on port {PORT}` when it is ready.
-- **In development:** the backend runs in Docker (port `8000` is published), and the Electron app is pointed at it with `XEPTOCORE_BACKEND_PORT=8000`. In a packaged build (not available yet), Electron will start the backend itself and read the port from that `Backend ready on port ...` line.
+- **In development:** the backend runs in Docker (port `8000` is published on `127.0.0.1` only), and the Electron app is pointed at it with `XEPTOCORE_BACKEND_PORT=8000`. In a packaged build (not available yet), Electron will start the backend itself and read the port from that `Backend ready on port ...` line.
 - **No authentication, and CORS is open (`*`).** The backend is designed as a local service; see the security notes below.
 
 | Constant | Value | Notes |
@@ -241,6 +241,6 @@ A session entry is created when the first frame is successfully analysed (a sess
 
 ## Security notes
 
-- There is no authentication and CORS is open. Do not expose the backend port to untrusted networks; in the Docker development setup, binding the port to `127.0.0.1` is safer.
+- There is no authentication and CORS is open. The Docker development setup publishes the port on `127.0.0.1` only, so other machines on the network cannot reach it; keep it that way, and do not expose the port to untrusted networks.
 - History stores only labels, scores, sources, frame counts, and timestamps, never images or frames.
 - See `SECURITY.md` in the repository root for the reporting policy.

@@ -68,9 +68,13 @@ def _load_yunet():
 
 
 def _load_cascade():
-    cascade = cv2.CascadeClassifier(
-        cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-    )
+    try:
+        cascade = cv2.CascadeClassifier(
+            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        )
+    except (AttributeError, cv2.error):
+        # OpenCV 5.x no longer provides the classic Haar cascade API.
+        return None
     return None if cascade.empty() else cascade
 
 
@@ -85,7 +89,10 @@ else:
             "Download face_detection_yunet_2023mar.onnx into backend/weights/ for better results."
         )
     else:
-        print("[ERR] No face detector available")
+        print(
+            "[ERR] No face detector available: no faces will be found. "
+            "Put face_detection_yunet_2023mar.onnx into backend/weights/."
+        )
 
 
 def get_face_detector_name() -> str:

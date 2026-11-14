@@ -1,0 +1,8 @@
+# Dependencies for the automated tests only. TensorFlow is deliberately not
+# listed: the tests do not load the models, so they run in seconds without the
+# weights. Install and run with:
+#   pip install -r requirements-test.txt
+#   pytest
+pytest
+numpy
+opencv-python-headless>=4.8.0,<5

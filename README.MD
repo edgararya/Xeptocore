@@ -187,7 +187,7 @@ On macOS/Linux shells: `XEPTOCORE_BACKEND_PORT=8000 npm run dev`.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). To report a security issue, see [SECURITY.md](SECURITY.md).
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md). To report a security issue, see [SECURITY.md](.github/SECURITY.md).
 
 ## Acknowledgements
 

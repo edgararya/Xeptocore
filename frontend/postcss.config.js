@@ -1,9 +1,9 @@
 // frontend/postcss.config.js
-// Tailwind CSS v3 + Autoprefixer. CommonJS, like the rest of the non-renderer files.
+// Tailwind CSS v4 + Autoprefixer. CommonJS, like the rest of the non-renderer files.
 
 module.exports = {
   plugins: {
-    tailwindcss: {},
+    '@tailwindcss/postcss': {},
     autoprefixer: {},
   },
 };

@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.js";
 /*
  * Minimal placeholder styling so the app is usable while the real visual
  * design (desain.md) is implemented. Colors come from the semantic tokens in

@@ -28,7 +28,8 @@ function createWindow() {
     mainWindow.loadURL(DEV_SERVER_URL);
   } else {
     // Production: load the bundled renderer HTML.
-    mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+    // Vite builds the renderer into frontend/dist/renderer (see vite.config.mjs).
+    mainWindow.loadFile(path.join(app.getAppPath(), 'dist', 'renderer', 'index.html'));
   }
 
   mainWindow.on('closed', () => {

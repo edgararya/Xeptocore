@@ -8,11 +8,38 @@
     "dev:renderer": "vite",
     "dev:electron": "wait-on tcp:5173 && cross-env ELECTRON_START_URL=http://localhost:5173 electron .",
     "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
-    "build:renderer": "vite build"
+    "build:renderer": "vite build",
+    "dist": "npm run build:renderer && electron-builder --win nsis"
   },
   "dependencies": {
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
+  },
+  "build": {
+    "appId": "com.xeptocore.app",
+    "productName": "Xeptocore",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/main/**/*",
+      "dist/renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend/dist/backend",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    }
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
@@ -21,6 +48,7 @@
     "concurrently": "^10.0.6",
     "cross-env": "^10.1.0",
     "electron": "^44.9.1",
+    "electron-builder": "^26.0.0",
     "postcss": "^8.5.30",
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.4",

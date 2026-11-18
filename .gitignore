@@ -7,3 +7,6 @@ testing/
 node_modules/
 dist/
 .claude/
+release/
+build/
+.venv-build/

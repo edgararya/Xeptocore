@@ -64,7 +64,8 @@ function loadWidget(win) {
   if (!app.isPackaged && DEV_SERVER_URL) {
     win.loadURL(`${DEV_SERVER_URL}#widget`);
   } else {
-    win.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'), { hash: 'widget' });
+    // Vite builds the renderer into frontend/dist/renderer (see vite.config.mjs).
+    win.loadFile(path.join(app.getAppPath(), 'dist', 'renderer', 'index.html'), { hash: 'widget' });
   }
 }
 

@@ -21,6 +21,14 @@ let startupFailureReported = false;
 
 function backendExecutablePath() {
   const binary = process.platform === 'win32' ? 'backend.exe' : 'backend';
+
+  // Packaged app: electron-builder copies the PyInstaller onedir output into
+  // <install dir>/resources/backend/ via extraResources.
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'backend', binary);
+  }
+
+  // Development: a locally built backend placed under src/main/backend/<platform>/.
   const platformDir = process.platform === 'win32'
     ? 'windows'
     : process.platform === 'darwin'
@@ -89,9 +97,24 @@ function startBackend(onStartupFailure) {
   }
 
   // No PORT is passed: the backend selects an available port itself and reports it on stdout.
+  // The install directory (e.g. Program Files) is not writable, so detection
+  // history is stored in the per-user data folder instead.
+  const dataDir = app.getPath('userData');
+  try {
+    fs.mkdirSync(dataDir, { recursive: true });
+  } catch (err) {
+    console.error(`[pythonBridge] Could not create data dir ${dataDir}: ${err.message}`);
+  }
+
   backendProcess = spawn(executable, [], {
+    cwd: path.dirname(executable),
+    env: {
+      ...process.env,
+      HISTORY_FILE: path.join(dataDir, 'history.json'),
+    },
     stdio: ['ignore', 'pipe', 'pipe'],
     detached: process.platform !== 'win32',
+    windowsHide: true,
   });
 
   // Fail fast if the backend never reports a port (e.g. it hangs while loading ML models).

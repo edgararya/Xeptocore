@@ -4,7 +4,17 @@ A desktop app that checks whether faces in images, videos, or **your live screen
 
 Documentation: [docs/](docs/)
 
-> **Status:** work in progress. Upload, live scan, and history all work in a development setup. A one-click installer is not available yet (see the [roadmap](#roadmap)).
+> **Status:** work in progress (early release). Upload, live scan, and history work, and a Windows installer is available (see below).
+
+## Download (Windows)
+
+Get the latest installer from the [**Releases page**](https://github.com/edgararya/Xeptocore/releases/latest): download `Xeptocore Setup x.x.x.exe` and run it. No Python, Docker, or other setup is needed.
+
+- Windows 10/11, 64-bit.
+- The installer is large (several hundred MB) because it bundles TensorFlow and the models.
+- The installer is not code-signed yet, so Windows SmartScreen may show "Windows protected your PC". Click **More info**, then **Run anyway**.
+- The first launch can take 10 to 30 seconds while the models load.
+- Detection history is stored per user in `%AppData%\xeptocore-frontend\history.json` and is kept when you update the app.
 
 <table border="0">
   <tr>
@@ -124,13 +134,23 @@ $env:XEPTOCORE_BACKEND_PORT = 8000; npm run dev
 
 On macOS/Linux shells: `XEPTOCORE_BACKEND_PORT=8000 npm run dev`.
 
-`XEPTOCORE_BACKEND_PORT` tells the app to use the backend that is already running instead of looking for a bundled executable (installers are planned, not available yet).
+`XEPTOCORE_BACKEND_PORT` tells the app to use the backend that is already running instead of the bundled `backend.exe` (which only exists in the installer build).
 
 ### Using it
 
 - **Upload File** tab: drag a file in (or click to browse) and press **Detect**.
 - **Live scan**: press **Start Live Scan** in the main window, or right-click the tray icon (check the hidden icons arrow in the taskbar) and choose **Start Live Scan**. A small widget appears at the top right of your screen.
 - **History** tab: lists uploads and live scan sessions; use **Refresh**, **Delete**, or **Clear all**.
+
+## Building the Windows installer
+
+Only needed if you want to build the installer yourself. Requires Python 3.10 (with the `py` launcher), Node.js, and the model weights in `backend/weights/`.
+
+```bat
+build_windows.bat
+```
+
+This bundles the backend with PyInstaller (`backend/backend.spec`), then packages the Electron app with electron-builder. The installer is written to `frontend\release\`. Build output is git-ignored; publish the installer through GitHub Releases rather than committing it.
 
 ## Project structure
 
@@ -179,7 +199,7 @@ On macOS/Linux shells: `XEPTOCORE_BACKEND_PORT=8000 npm run dev`.
 - [x] Upload analysis with technical details
 - [x] Live scan widget and system tray
 - [x] History with one summary entry per live scan session
-- [ ] Windows installer (bundled backend, no Docker needed)
+- [x] Windows installer (bundled backend, no Docker needed)
 - [ ] Automated tests and CI
 - [ ] Published evaluation results on a labelled test set
 - [ ] Mobile support

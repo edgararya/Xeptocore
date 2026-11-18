@@ -20,10 +20,25 @@ function mimeFor(filePath) {
   return EXTENSION_MIME[ext] || 'application/octet-stream';
 }
 
+// The backend only reports its port after the ML models have loaded, which can
+// take a while on first launch. Wait for it instead of failing immediately.
+const BACKEND_WAIT_TIMEOUT_MS = 60000;
+const BACKEND_WAIT_INTERVAL_MS = 250;
+
+async function waitForBackendPort() {
+  const deadline = Date.now() + BACKEND_WAIT_TIMEOUT_MS;
+  let port = getBackendPort();
+  while ((port === null || port === undefined) && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, BACKEND_WAIT_INTERVAL_MS));
+    port = getBackendPort();
+  }
+  return port;
+}
+
 // Single entry point for every backend call: resolves the port, performs the
 // request, and turns failures into plain Errors with readable messages.
 async function backendFetch(route, options = {}) {
-  const port = getBackendPort();
+  const port = await waitForBackendPort();
   if (port === null || port === undefined) {
     throw new Error('Backend is not ready yet');
   }
